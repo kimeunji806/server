@@ -3,6 +3,7 @@ const { getConnection, oracledb } = require("./db");
 const cors = require("cors");
 const OracleDB = require("oracledb");
 const app = express(); // 익스프레스 모듈을 활용 실체 기능.
+app.use(express.static(__dirname));
 
 // 셋업 추가. CORS
 app.use(cors()); // CORS 요청 처리.
@@ -19,7 +20,8 @@ app.get("/board", async (req, res) => {
     `SELECT * FROM board ORDER BY 1`,
   );
   const json = JSON.stringify(rows); // 객체 -> json 문자열.
-  res.send(json); // 응답처리.
+  res.json(rows);
+  // res.send(json); // 응답처리.
 });
 // 글삭제.
 app.get("/board_delete/:bno", async (req, res) => {
@@ -100,7 +102,6 @@ app.post("/board_insert", async (req, res) => {
     res.json({ retCode: "NG" });
   }
   // const json = JSON.stringify(rows); // 객체 -> json 문자열.
-  // res.send(result); // 응답처리.
 });
 
 app.listen(3000, () => {
