@@ -71,6 +71,7 @@ app.get("/board_update/:bno/:title/:content", async (req, res) => {
 // 등록.
 app.post("/board_insert", async (req, res) => {
   console.log(req.body); // req.params 속성.
+  const { title, content, writer } = req.body;
   const conn = await getConnection();
   const result = await conn.execute(
     `insert into board(board_no, title, writer, content)
@@ -78,9 +79,9 @@ app.post("/board_insert", async (req, res) => {
      returning board_no into :bno`,
     {
       bno: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
-      title: req.body.title,
-      content: req.body.content,
-      writer: req.body.writer,
+      title,
+      content,
+      writer,
     },
     { autoCommit: true },
   );
@@ -88,7 +89,13 @@ app.post("/board_insert", async (req, res) => {
   console.log(result.outBinds.bno[0]);
   // 정상 삭제되면 OK, 삭제 못하면 NG
   if (result.rowsAffected) {
-    res.json({ retCode: "OK" }); // {"retCode": "OK" }
+    res.json({
+      retCode: "OK",
+      BOARD_NO: result.outBinds.bno[0],
+      TITLE: title,
+      WRITER: writer,
+      CONTENT: content,
+    }); // {"retCode": "OK" }
   } else {
     res.json({ retCode: "NG" });
   }
