@@ -40,3 +40,22 @@ function makeRow(elem = {}) {
   // 작업 반환.
   return tr;
 }
+
+// 페이징 a 클릭.
+document.querySelectorAll(".pagination a").forEach((aTag) => {
+  addEventListener("click", (e) => {
+    document.querySelector("#boardlist tbody").innerHTML = ""; // 기존목록 지우기.
+    const page = aTag.innerHTML;
+    fetch("http://localhost:3000/board/" + page) // get
+      .then((resp) => resp.json())
+      .then((data) => {
+        console.log(data);
+        data.forEach((elem) => {
+          // console.log(elem); // 꼭 확인하기. 2026.02.05.
+          const tr = makeRow(elem);
+          // td, button 종료.
+          document.querySelector("#boardlist tbody").appendChild(tr);
+        });
+      });
+  });
+});

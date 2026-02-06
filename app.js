@@ -14,10 +14,15 @@ app.get("/", (req, res) => {
   res.send("OK");
 });
 // 글목록 조회.
-app.get("/board", async (req, res) => {
+app.get("/board/:page", async (req, res) => {
+  const page = req.params.page;
   const conn = await getConnection();
   const { metaData, rows } = await conn.execute(
-    `SELECT * FROM board ORDER BY 1`,
+    `  select *
+         from board
+         order by board_no
+         offset (:page - 1) * 10 rows fetch next 10 rows only`,
+    { page },
   );
   const json = JSON.stringify(rows); // 객체 -> json 문자열.
   res.json(rows);
